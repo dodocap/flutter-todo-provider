@@ -26,7 +26,8 @@ class _TodosPageState extends State<TodosPage> {
                 TodoHeader(),
                 CreateTodo(),
                 SizedBox(height: 20.0),
-                SearchAndFilterTodo()
+                SearchAndFilterTodo(),
+                ShowTodos()
               ],
             ),
           ),
@@ -80,7 +81,7 @@ class _CreateTodoState extends State<CreateTodo> {
   Widget build(BuildContext context) {
     return TextField(
       controller: newTodoController,
-      decoration: InputDecoration(labelText: 'What to do?'),
+      decoration: const InputDecoration(labelText: 'What to do?'),
       onSubmitted: (todoDesc) {
         if (todoDesc.trim().isNotEmpty) {
           context.read<TodoList>().addTodo(todoDesc);
@@ -138,5 +139,44 @@ class SearchAndFilterTodo extends StatelessWidget {
     final currentFilter = context.watch<TodoFilter>().state.filter;
 
     return currentFilter == filter ? Colors.blue : Colors.grey;
+  }
+}
+
+class ShowTodos extends StatelessWidget {
+  const ShowTodos({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final todos = context.watch<FilteredTodos>().state.filteredTodos;
+    return ListView.separated(
+      primary: false,
+      shrinkWrap: true,
+      separatorBuilder: (_, __) => const Divider(color: Colors.grey),
+      itemCount: todos.length,
+      itemBuilder: (_, index) {
+        return Dismissible(
+          key: ValueKey(todos[index].id),
+          background: showBackground(0),
+          secondaryBackground: showBackground(1),
+          child: Text(
+            todos[index].desc,
+            style: const TextStyle(fontSize: 20.0),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget showBackground(int direction) {
+    return Container(
+      margin: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      color: Colors.red,
+      alignment: direction == 0 ? Alignment.centerLeft : Alignment.centerRight,
+      child: const Icon(Icons.delete,
+        size: 30.0,
+        color: Colors.white,
+      ),
+    );
   }
 }
