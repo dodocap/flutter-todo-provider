@@ -29,8 +29,18 @@ class ActiveTodoCountState extends Equatable {
 }
 
 class ActiveTodoCount with ChangeNotifier {
-  ActiveTodoCountState _state = ActiveTodoCountState.initial();
+  // ActiveTodoCountState _state = ActiveTodoCountState.initial();
+  final int initialActiveTodoCount;
+
+  late ActiveTodoCountState _state;
+
   ActiveTodoCountState get state => _state;
+
+  ActiveTodoCount({
+    required this.initialActiveTodoCount,
+  }) {
+    _state = ActiveTodoCountState(activeTodoCount: initialActiveTodoCount);
+  }
 
   void update(TodoList todoList) {
     final int newActiveTodoCount = todoList.state.todos.where((todo) => !todo.completed).length;
