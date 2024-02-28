@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:todo_provider/providers/todo_list.dart';
+import 'package:state_notifier/state_notifier.dart';
+import 'package:todo_provider/model/todo_model.dart';
+import 'package:todo_provider/providers/providers.dart';
 
 class ActiveTodoCountState extends Equatable {
   final int activeTodoCount;
@@ -27,10 +29,16 @@ class ActiveTodoCountState extends Equatable {
   }
 }
 
-class ActiveTodoCount  {
-  final TodoList todoList;
+class ActiveTodoCount extends StateNotifier<ActiveTodoCountState> with LocatorMixin {
 
-  ActiveTodoCount({required this.todoList});
+  ActiveTodoCount() : super(ActiveTodoCountState.initial());
 
-  ActiveTodoCountState get state => ActiveTodoCountState(activeTodoCount: todoList.state.todos.where((todo) => !todo.completed).length);
+  @override
+  void update(Locator watch) {
+    final List<Todo> todos = watch<TodoListState>().todos;
+
+    state = state.copyWith(activeTodoCount: todos.where((todo) => !todo.completed).length);
+
+    super.update(watch);
+  }
 }
